@@ -1,0 +1,9 @@
+- [x] Write src/io.js
+- [x] Write src/prompt.js
+- [x] Write src/llm.js
+- [x] Write src/tools.js
+- [x] Write src/agent.js
+- [x] Write src/index.js
+- [x] Write package.json
+- [x] Test against local LLM with a tool-using task
+- [x] Write README.md

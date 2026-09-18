@@ -1,0 +1,9 @@
+{
+  "name": "mini-harness",
+  "version": "0.1.0",
+  "description": "A tiny coding harness to learn how Claude Code / Codex style agents work",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js"
+  }
+}
