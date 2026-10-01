@@ -1,13 +1,14 @@
 import React from "react";
 import { Series } from "remotion";
 import { sec } from "./theme.js";
-import { Example, Files, Flow, Idea, Outro, RunIt, Title } from "./scenes.jsx";
+import { Cool, Example, Files, Flow, Idea, Outro, RunIt, Title } from "./scenes.jsx";
 
 export const SCENES = [
   [Title, 4],
   [Idea, 6],
   [RunIt, 6],
   [Example, 14],
+  [Cool, 22],
   [Files, 10],
   [Flow, 30],
   [Outro, 5],

@@ -1,6 +1,6 @@
 import React from "react";
 import { interpolate, useCurrentFrame } from "remotion";
-import { C, MONO, typed } from "./theme.js";
+import { C, MONO, SANS, typed } from "./theme.js";
 import { Appear, Card, Code, Heading, Scene, Term, Window } from "./ui.jsx";
 
 /* 1. Title */
@@ -84,7 +84,7 @@ export const Idea = () => (
 export const RunIt = () => {
   const lines = [
     { at: 20, segs: [{ t: "$ ", color: C.dim }, { t: "npm start", cps: 10 }] },
-    { at: 62, segs: [{ t: "API:http://localhost:1234/v1/chat/completions MODEL:qwen3.5-4b-mlx.  Ctrl+C to quit", color: C.dim }] },
+    { at: 62, segs: [{ t: "API:http://localhost:1234/v1/chat/completions MODEL:qwen3.8-27b-splash.  Ctrl+C to quit", color: C.dim }] },
     { at: 62, segs: [] },
     { at: 70, segs: [{ t: "user> ", color: C.cyan }] },
   ];
@@ -104,17 +104,21 @@ export const RunIt = () => {
 
 /* 4. Example session */
 export const Example = () => {
+  const work = (at) => ({ at, segs: [{ t: " Working...", color: C.dim }] });
   const lines = [
     { at: 8, segs: [{ t: "user> ", color: C.cyan }, { t: "hi", at: 14, cps: 8 }] },
-    { at: 44, segs: [{ t: "agnt> ", color: C.green }, { t: "Hello! How can I help you today?", at: 44, cps: 50 }] },
-    { at: 70, segs: [] },
-    { at: 78, segs: [{ t: "user> ", color: C.cyan }, { t: "what time is it", at: 84, cps: 14 }] },
-    { at: 150, segs: [{ t: ' Tool:run_command({"command":"date"})', color: C.dim }] },
-    { at: 172, segs: [{ t: " Allow this tool? [y/n] ", color: C.amber }, { t: "y", at: 205, cps: 6 }] },
-    { at: 225, segs: [{ t: "agnt> ", color: C.green }, { t: "The current time is Thursday, October 1st at 5:02 PM IST (2026).", at: 225, cps: 40 }] },
+    work(32),
+    { at: 52, segs: [{ t: "agnt> ", color: C.green }, { t: "Hello! How can I help you today?", at: 52, cps: 50 }] },
+    { at: 78, segs: [] },
+    { at: 84, segs: [{ t: "user> ", color: C.cyan }, { t: "what time is it", at: 90, cps: 14 }] },
+    work(140),
+    { at: 156, segs: [{ t: ' Tool:run_command({"command":"date"})', color: C.dim }] },
+    { at: 178, segs: [{ t: " Allow this tool? [y/n/all] ", color: C.amber }, { t: "y", at: 208, cps: 6 }] },
+    work(222),
+    { at: 238, segs: [{ t: "agnt> ", color: C.green }, { t: "The current time is Thursday, October 1st at 5:02 PM IST (2026).", at: 238, cps: 40 }] },
   ];
   const notes = [
-    [172, "Risky tools ask first", "write_file and run_command wait for your y/n.", C.amber],
+    [178, "Risky tools ask first", "Answer y, n, or all to stop asking.", C.amber],
     [300, "/clear resets history", "Back to just the system prompt.", C.cyan],
     [350, "Ctrl-C quits", "No exit command to remember.", C.green],
   ];
@@ -124,7 +128,7 @@ export const Example = () => {
       <div style={{ position: "absolute", left: 100, top: 250 }}>
         <Appear at={2}>
           <Window title="mini-harness" width={1160}>
-            <Term lines={lines} size={23} minHeight={420} />
+            <Term lines={lines} size={23} minHeight={460} />
           </Window>
         </Appear>
       </div>
@@ -138,6 +142,85 @@ export const Example = () => {
           </Appear>
         ))}
       </div>
+    </Scene>
+  );
+};
+
+/* 4b. A cooler example: one prompt writes a page and opens it */
+const TOOL_LINE = " Tool:write_file({\"path\":\"index.html\",\"content\":\"<!DOCTYPE html>\\n<html lang=\\\"en\\\">\\n<head>\\n    <m ...(trimmed) })";
+
+const Browser = ({ children }) => (
+  <div style={{ width: 760, background: "#e5e7eb", borderRadius: 16, overflow: "hidden", boxShadow: "0 30px 80px rgba(0,0,0,.6)" }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", background: "#d1d5db" }}>
+      {["#ef4444", "#f59e0b", "#22c55e"].map((c) => (
+        <span key={c} style={{ width: 14, height: 14, borderRadius: 7, background: c }} />
+      ))}
+      <div style={{ marginLeft: 12, flex: 1, background: "#f3f4f6", borderRadius: 8, padding: "6px 14px", fontFamily: MONO, fontSize: 16, color: "#4b5563" }}>
+        file:///mini-harness/index.html
+      </div>
+    </div>
+    <div style={{ height: 560, position: "relative", overflow: "hidden" }}>{children}</div>
+  </div>
+);
+
+const CoolPage = ({ t }) => {
+  const hue = (t * 1.5) % 360;
+  return (
+    <div style={{
+      position: "absolute", inset: 0, color: "#fff", fontFamily: SANS,
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+      background: `linear-gradient(135deg, hsl(${hue} 85% 55%), hsl(${(hue + 70) % 360} 85% 55%), hsl(${(hue + 140) % 360} 85% 55%))`,
+    }}>
+      {[...Array(8)].map((_, i) => (
+        <div key={i} style={{
+          position: "absolute", left: `${(i * 13 + 8) % 90}%`, top: `${50 + 40 * Math.sin(t / 20 + i)}%`,
+          width: 30 + i * 9, height: 30 + i * 9, borderRadius: "50%", background: "rgba(255,255,255,.18)",
+        }} />
+      ))}
+      <div style={{ fontSize: 92, fontWeight: 800, textShadow: "0 6px 30px rgba(0,0,0,.35)", display: "flex" }}>
+        {"Hello, World!".split("").map((ch, i) => (
+          <span key={i} style={{ display: "inline-block", whiteSpace: "pre", transform: `translateY(${Math.sin(t / 8 + i * 0.6) * 14}px)` }}>{ch}</span>
+        ))}
+      </div>
+      <div style={{ fontSize: 30, marginTop: 14, opacity: 0.9 }}>Welcome to my first website</div>
+    </div>
+  );
+};
+
+export const Cool = () => {
+  const frame = useCurrentFrame();
+  const sped = { t: "  ⏩ sped up", color: C.amber };
+  const lines = [
+    { at: 8, segs: [{ t: "user> ", color: C.cyan }, { t: "create a cool helloworld website and open it in browser", at: 12, cps: 28 }] },
+    { at: 100, segs: [{ t: " Working...", color: C.dim }, sped] },
+    { at: 175, segs: [{ t: TOOL_LINE, color: C.dim }] },
+    { at: 200, segs: [{ t: " Allow this tool? [y/n/all] ", color: C.amber }, { t: "all", at: 225, cps: 5 }] },
+    { at: 250, segs: [{ t: " Working...", color: C.dim }, sped] },
+    { at: 300, segs: [{ t: ' Tool:run_command({"command":"open index.html"})', color: C.dim }] },
+    { at: 335, segs: [{ t: " Working...", color: C.dim }, sped] },
+    { at: 390, segs: [{ t: "agnt> ", color: C.green }, { t: "Done! I created index.html with an animated gradient and opened it in your browser.", at: 390, cps: 45 }] },
+  ];
+  const waiting = (frame >= 100 && frame < 175) || (frame >= 250 && frame < 300) || (frame >= 335 && frame < 390);
+  return (
+    <Scene>
+      <Heading sub="One prompt. It writes the page and opens it.">Here is an even cooler example</Heading>
+      {waiting && (
+        <div style={{ position: "absolute", left: 60, top: 192, fontSize: 24, color: C.amber, fontWeight: 700 }}>
+          ⏩ model time sped up
+        </div>
+      )}
+      <div style={{ position: "absolute", left: 60, top: 245 }}>
+        <Appear at={2}>
+          <Window title="mini-harness" width={1000}>
+            <Term lines={lines} size={20} minHeight={545} wrap />
+          </Window>
+        </Appear>
+      </div>
+      <Appear at={305} y={50} style={{ position: "absolute", left: 1100, top: 245 }}>
+        <Browser>
+          <CoolPage t={frame} />
+        </Browser>
+      </Appear>
     </Scene>
   );
 };

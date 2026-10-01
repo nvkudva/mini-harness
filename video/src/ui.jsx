@@ -85,11 +85,11 @@ const Cursor = ({ size }) => {
 };
 
 // lines: [{ at, segs: [{ t, color, at?, cps? }] }]. A line shows from `at`; each segment types from its own `at`.
-export const Term = ({ lines, size = 24, minHeight }) => {
+export const Term = ({ lines, size = 24, minHeight, wrap = false }) => {
   const frame = useCurrentFrame();
   const visible = lines.filter((l) => frame >= l.at);
   return (
-    <div style={{ fontFamily: MONO, fontSize: size, lineHeight: 1.55, whiteSpace: "pre", minHeight }}>
+    <div style={{ fontFamily: MONO, fontSize: size, lineHeight: 1.55, whiteSpace: wrap ? "pre-wrap" : "pre", overflowWrap: wrap ? "anywhere" : "normal", minHeight }}>
       {visible.map((line, i) => (
         <div key={i} style={{ minHeight: size * 1.55 }}>
           {line.segs.map((s, j) => (
