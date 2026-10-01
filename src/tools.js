@@ -46,8 +46,8 @@ export async function run(name, rawArgs) {
   if (!tool) return `error: unknown tool ${name}`;
   try {
     const args = JSON.parse(rawArgs || "{}"); // small models sometimes emit broken JSON
-    console.debug(`  <tool> ${name}(${JSON.stringify(args)})`);
-    const allowed = !tool.confirm || (await terminal.confirm("<confirm>Allow?"));
+    console.debug(` Tool:${name}(${JSON.stringify(args)})`);
+    const allowed = !tool.confirm || (await terminal.confirm(" Allow this tool?"));
     if (!allowed) return "user denied this action";
     return String(await tool.run(args));
   } catch (err) {
