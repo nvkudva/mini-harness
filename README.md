@@ -1,16 +1,27 @@
 # Mini Harness
 
-A tiny coding agent, like Claude Code or Codex, in about 100 lines of Node.js.
+A tiny coding agent, like Claude Code or Codex, in about 120 lines of Node.js.
 No dependencies. It talks to your local LLM at `http://localhost:1234/v1`.
 
 ## Run it
 
 ```bash
-MODEL=qwen3.5-4b-mlx node src/index.js
+MODEL=qwen3.5-4b-mlx npm start
 ```
 
-Type a task. Type `exit` or an empty line to quit.
+Type a task. Type `exit` or an empty line to quit. Type `/reset` to clear the history.
 `MODEL` picks the model; `LLM_URL` changes the endpoint. Both are optional.
+Set `DEBUG=1` to print the full `messages` array before every model call.
+
+Example session:
+
+```
+you> create hello.txt with the word hello
+  > write_file({"path":"hello.txt","content":"hello"})
+  Allow? [y/N] y
+
+agent> Created hello.txt containing "hello".
+```
 
 ## The one idea
 
@@ -32,6 +43,8 @@ Everything else is plumbing around that loop.
 | `src/tools.js` | Four tools. Each has a schema the model sees and a function that runs. |
 | `src/io.js` | One shared readline for both the prompt and the y/N confirmation. |
 
+Read them in this order: `index.js`, `agent.js`, `llm.js`, `tools.js`, `io.js`.
+
 ## Step by step
 
 Here is what happens when you type `create hello.txt with the word hello`.
@@ -40,8 +53,8 @@ Here is what happens when you type `create hello.txt with the word hello`.
 `messages` is a plain array. It starts with one `system` message and grows for the whole session.
 That array is the agent's entire memory.
 
-**Step 2. The agent sends everything to the model.** `agent.js` calls `chat(messages, toolSchemas)`.
-`toolSchemas` is the list of tools the model may use, as JSON. The model never runs anything itself.
+**Step 2. The agent sends everything to the model.** `agent.js` calls `llm.chat(messages, tools.schemas)`.
+`tools.schemas` is the list of tools the model may use, as JSON. The model never runs anything itself.
 It can only ask.
 
 **Step 3. `llm.js` makes the HTTP request.** It posts `{ model, messages, tools }` to `/v1/chat/completions`.
@@ -51,10 +64,10 @@ It returns just the `message` object from the reply. That object has `content` a
 If there are `tool_calls`, the agent keeps going.
 
 **Step 5. Each tool call is run.** A tool call looks like `{ id, function: { name: "write_file", arguments: "{...}" } }`.
-The arguments are a JSON string, so the agent parses them and calls `runTool(name, args)`.
+The arguments are a JSON string, so the agent parses them and calls `tools.run(name, args)`.
 
 **Step 6. Dangerous tools ask first.** `write_file` and `run_command` have `confirm: true`.
-`runTool` prints the call and asks `Allow? [y/N]`. If you say no, the tool returns `"user denied this action"`.
+`tools.run` prints the call and asks `Allow? [y/N]`. If you say no, the tool returns `"user denied this action"`.
 The model sees that string and can change plan.
 
 **Step 7. The result goes back into the conversation.** The agent pushes `{ role: "tool", tool_call_id, content }`.

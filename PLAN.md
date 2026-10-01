@@ -25,3 +25,7 @@ A minimal coding harness (like Claude Code / Codex) in plain Node.js, small enou
 - `edit_file` with search/replace: `write_file` of the whole file is simpler to understand.
 
 ## Revisions
+- System prompt inlined in `src/index.js`; `src/prompt.js` removed.
+- `DEBUG=1` prints the full `messages` array before each model call.
+- `/reset` in the REPL clears history back to the system prompt.
+- Bad JSON in tool-call arguments is returned to the model as an error instead of crashing.

@@ -1,6 +1,6 @@
 // REPL: read a line, run the agent, print the answer, loop. History lives for the whole session.
-import { ask, rl } from "./io.js";
-import { runAgent } from "./agent.js";
+import * as io from "./io.js";
+import * as agent from "./agent.js";
 
 const SYSTEM_PROMPT = `You are a coding assistant working inside the directory ${process.cwd()}.
 You have tools to list files, read files, write files and run shell commands.
@@ -10,10 +10,11 @@ Prefer small, targeted changes. When the task is done, reply with a short plain-
 const messages = [{ role: "system", content: SYSTEM_PROMPT }];
 
 while (true) {
-  const input = await ask("\nyou> ");
+  const input = await io.ask("\nyou> ");
   if (input === "exit" || input === "") break;
+  if (input === "/reset") { messages.length = 1; console.log("history cleared"); continue; } // keep only the system prompt
   messages.push({ role: "user", content: input });
-  const answer = await runAgent(messages);
+  const answer = await agent.run(messages);
   console.log(`\nagent> ${answer}`);
 }
-rl.close();
+io.rl.close();

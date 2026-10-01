@@ -1,5 +1,4 @@
 - [x] Write src/io.js
-- [x] Write src/prompt.js
 - [x] Write src/llm.js
 - [x] Write src/tools.js
 - [x] Write src/agent.js

@@ -1,7 +1,7 @@
 // Each tool = a schema the model sees + a function that runs. `confirm: true` asks y/N first.
 import fs from "node:fs/promises";
 import { execSync } from "node:child_process";
-import { confirm } from "./io.js";
+import * as io from "./io.js";
 
 export const tools = {
   list_files: {
@@ -36,16 +36,16 @@ export const tools = {
 };
 
 // The shape the OpenAI-style API expects in the `tools` field.
-export const toolSchemas = Object.entries(tools).map(([name, t]) => ({
+export const schemas = Object.entries(tools).map(([name, tool]) => ({
   type: "function",
-  function: { name, description: t.description, parameters: t.parameters },
+  function: { name, description: tool.description, parameters: tool.parameters },
 }));
 
-export async function runTool(name, args) {
+export async function run(name, args) {
   const tool = tools[name];
   if (!tool) return `error: unknown tool ${name}`;
   console.log(`  > ${name}(${JSON.stringify(args)})`);
-  if (tool.confirm && !(await confirm("  Allow?"))) return "user denied this action";
+  if (tool.confirm && !(await io.confirm("  Allow?"))) return "user denied this action";
   try {
     return String(await tool.run(args));
   } catch (err) {
