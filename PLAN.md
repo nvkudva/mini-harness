@@ -9,7 +9,6 @@ A minimal coding harness (like Claude Code / Codex) in plain Node.js, small enou
 - `src/llm.js`    The only network code. One `fetch` to `POST /v1/chat/completions` (OpenAI-compatible, LM Studio on localhost:1234).
 - `src/tools.js`  Four tools: `read_file`, `write_file`, `list_files`, `run_command`. Each is a JSON schema (what the model sees) plus a function (what runs).
 - `src/io.js`     One shared readline interface and an `ask()` helper used by the REPL and by the y/n confirmation.
-- `src/prompt.js` The system prompt string.
 
 ## Decisions
 - OpenAI-compatible chat API with raw `fetch`, zero dependencies. User's local model at `http://localhost:1234/v1`.

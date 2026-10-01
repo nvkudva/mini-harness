@@ -31,7 +31,6 @@ Everything else is plumbing around that loop.
 | `src/llm.js` | One `fetch` call to the model. The only network code. |
 | `src/tools.js` | Four tools. Each has a schema the model sees and a function that runs. |
 | `src/io.js` | One shared readline for both the prompt and the y/N confirmation. |
-| `src/prompt.js` | The system prompt string. |
 
 ## Step by step
 
