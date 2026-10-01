@@ -3,7 +3,9 @@
 A tiny coding agent, like Claude Code or Codex, in about 160 lines of Node.js.
 No dependencies. By default it talks to your local LLM at `http://localhost:1234/v1`.
 
-<video src="demo.mp4" controls muted width="100%"></video>
+[![Watch the demo video](demo-poster.png)](demo.mp4)
+
+[Watch the 97 second demo video](demo.mp4): how to run it, and how it works step by step.
 
 ## Run it
 
