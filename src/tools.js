@@ -36,9 +36,9 @@ export const tools = {
 };
 
 // The shape the OpenAI-style API expects in the `tools` field.
-export const schemas = Object.entries(tools).map(([name, tool]) => ({
+export const schemas = Object.entries(tools).map(([name, { description, parameters }]) => ({
   type: "function",
-  function: { name, description: tool.description, parameters: tool.parameters },
+  function: { name, description, parameters },
 }));
 
 export async function run(name, rawArgs) {
