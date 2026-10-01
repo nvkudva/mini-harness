@@ -6,21 +6,25 @@ No dependencies. It talks to your local LLM at `http://localhost:1234/v1`.
 ## Run it
 
 ```bash
-MODEL=qwen3.5-4b-mlx npm start
+LLM_URL=http://localhost:1234/v1/chat/completions MODEL=qwen3.5-4b-mlx npm start
 ```
 
+`LLM_URL` is the chat completions endpoint of any OpenAI-compatible server. `MODEL` is the model name that server expects.
+Both are optional. To hard-code them, edit `ENDPOINT` and `MODEL` at the top of `src/llm.js`.
+
 Type a task. Type `/clear` to clear the history. Press Ctrl-C to quit.
-`MODEL` picks the model; `LLM_URL` changes the endpoint. Both are optional.
 Set `DEBUG=1` to print the full `context` array before every model call.
 
 Example session:
 
 ```
-user> create hello.txt with the word hello
-  > write_file({"path":"hello.txt","content":"hello"})
-  Allow? [y/N] y
+user> hi
+agnt> Hello! How can I help you today?
 
-agent> Created hello.txt containing "hello".
+user> what time is it
+ Tool:run_command({"command":"date"})
+ Allow this tool? [y/n] y
+agnt> The current time is Thursday, October 1st at 5:02 PM IST (2026).
 ```
 
 ## The one idea
@@ -67,7 +71,7 @@ If there are `tool_calls`, the agent keeps going.
 The arguments are a JSON string, so the agent parses them and calls `tools.run(name, args)`.
 
 **Step 6. Dangerous tools ask first.** `write_file` and `run_command` have `confirm: true`.
-`tools.run` prints the call and asks `Allow? [y/N]`. If you say no, the tool returns `"user denied this action"`.
+`tools.run` prints the call and asks `Allow this tool? [y/n]`. If you say no, the tool returns `"user denied this action"`.
 The model sees that string and can change plan.
 
 **Step 7. The result goes back into the conversation.** The agent pushes `{ role: "tool", tool_call_id, content }`.
@@ -76,7 +80,7 @@ Errors are pushed the same way as strings. The model can read the error and try 
 **Step 8. Loop.** Back to step 2. The model now sees the tool result and decides what to do next.
 It might call another tool, like `list_files`, or answer in text. When it answers in text, the loop exits.
 
-**Step 9. Print and wait.** `index.js` prints `agent> ...` and shows `user>` again.
+**Step 9. Print and wait.** `index.js` prints `agnt> ...` and shows `user>` again.
 Your next message is added to the same array, so the model remembers everything so far.
 
 ## Adding a tool
