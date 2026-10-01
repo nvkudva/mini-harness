@@ -41,7 +41,7 @@ export const schemas = Object.entries(tools).map(([name, { description, paramete
   function: { name, description, parameters },
 }));
 
-const trim = (text, max = 100) => (text.length > max ? `${text.slice(0, max)}...<trimmed>` : text);
+const trim = (text, max = 100) => (text.length > max ? `${text.slice(0, max)} ...(trimmed) })` : text);
 
 export async function run(name, rawArgs) {
   const tool = tools[name];

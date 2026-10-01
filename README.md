@@ -6,7 +6,7 @@ No dependencies. By default it talks to your local LLM at `http://localhost:1234
 ## Run it
 
 ```bash
-LLM_URL=http://localhost:1234/v1/chat/completions MODEL=qwen3.5-4b-mlx npm start
+LLM_URL=http://localhost:1234/v1/chat/completions MODEL=qwen3.8-27b-splash npm start
 ```
 
 `LLM_URL` is the chat completions endpoint of any OpenAI-compatible server. `MODEL` is the model name that server expects.
@@ -15,16 +15,20 @@ Both are optional. To hard-code them, edit `ENDPOINT` and `MODEL` at the top of 
 On start it prints the model and endpoint in use. Type a task. Type `/clear` to clear the history. Press Ctrl-C to quit.
 If the model call fails (server down, wrong model name), it prints the error and exits.
 Set `DEBUG=1` to print the full `context` array before every model call.
+Long tool calls are trimmed to 100 characters on screen. The model still gets the full call. `run_command` gives up after 30 seconds.
 
 Example session:
 
 ```
 user> hi
+ Working...
 agnt> Hello! How can I help you today?
 
 user> what time is it
+ Working...
  Tool:run_command({"command":"date"})
  Allow this tool? [y/n/all] y
+ Working...
 agnt> The current time is Thursday, October 1st at 5:02 PM IST (2026).
 ```
 
@@ -46,7 +50,7 @@ Everything else is plumbing around that loop.
 | `src/agent.js` | The loop above. The heart of the harness. |
 | `src/llm.js` | One `fetch` call to the model. The only network code. |
 | `src/tools.js` | Four tools. Each has a schema the model sees and a function that runs. |
-| `src/terminal.js` | One shared readline for both the prompt and the y/N confirmation. |
+| `src/terminal.js` | One shared readline for both the prompt and the y/n/all confirmation. |
 
 Read them in this order: `index.js`, `agent.js`, `llm.js`, `tools.js`, `terminal.js`.
 

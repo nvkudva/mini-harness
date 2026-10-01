@@ -1,6 +1,6 @@
 // The only place that talks to the model. OpenAI-compatible chat completions API.
 export const ENDPOINT = process.env.LLM_URL ?? "http://localhost:1234/v1/chat/completions";
-export const MODEL = process.env.MODEL ?? "qwen3.5-4b-mlx";
+export const MODEL = process.env.MODEL ?? "qwen3.8-27b-splash";
 
 export async function chat(messages, tools) {
   let res;

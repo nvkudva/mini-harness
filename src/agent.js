@@ -20,7 +20,7 @@ export async function run(input) {
   context.push({ role: "user", content: input });
   while (true) {
     if (process.env.DEBUG) console.log(JSON.stringify(context, null, 2)); // see exactly what the model sees
-    console.log("working...");
+    console.log(" Working...");
     const reply = await llm.chat(context, tools.schemas);
     context.push(reply);
 
