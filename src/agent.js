@@ -26,12 +26,7 @@ export async function run(input) {
     return (reply.content ?? "").trim(); // plain answer: we are done
 
     for (const { id, function: fn } of reply.tool_calls) {
-      let result;
-      try {
-        result = await tools.run(fn.name, JSON.parse(fn.arguments || "{}"));
-      } catch (err) {
-        result = `error: bad JSON arguments: ${err.message}`; // small models sometimes emit broken JSON
-      }
+      const result = await tools.run(fn.name, fn.arguments);
       context.push({ role: "tool", tool_call_id: id, content: result });
     }
   }

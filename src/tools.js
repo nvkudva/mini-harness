@@ -41,12 +41,13 @@ export const schemas = Object.entries(tools).map(([name, tool]) => ({
   function: { name, description: tool.description, parameters: tool.parameters },
 }));
 
-export async function run(name, args) {
+export async function run(name, rawArgs) {
   const tool = tools[name];
   if (!tool) return `error: unknown tool ${name}`;
-  console.log(`  > ${name}(${JSON.stringify(args)})`);
-  if (tool.confirm && !(await terminal.confirm("  Allow?"))) return "user denied this action";
   try {
+    const args = JSON.parse(rawArgs || "{}"); // small models sometimes emit broken JSON
+    console.log(`  > ${name}(${JSON.stringify(args)})`);
+    if (tool.confirm && !(await terminal.confirm("  Allow?"))) return "user denied this action";
     return String(await tool.run(args));
   } catch (err) {
     return `error: ${err.message}`; // give the error back to the model so it can recover
