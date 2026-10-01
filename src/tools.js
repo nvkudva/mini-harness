@@ -1,7 +1,7 @@
 // Each tool = a schema the model sees + a function that runs. `confirm: true` asks y/N first.
 import fs from "node:fs/promises";
 import { execSync } from "node:child_process";
-import * as io from "./io.js";
+import * as terminal from "./terminal.js";
 
 export const tools = {
   list_files: {
@@ -45,7 +45,7 @@ export async function run(name, args) {
   const tool = tools[name];
   if (!tool) return `error: unknown tool ${name}`;
   console.log(`  > ${name}(${JSON.stringify(args)})`);
-  if (tool.confirm && !(await io.confirm("  Allow?"))) return "user denied this action";
+  if (tool.confirm && !(await terminal.confirm("  Allow?"))) return "user denied this action";
   try {
     return String(await tool.run(args));
   } catch (err) {

@@ -1,9 +1,9 @@
 // REPL: read a line, run the agent, print the answer, loop. The agent keeps the history.
-import * as io from "./io.js";
+import * as terminal from "./terminal.js";
 import * as agent from "./agent.js";
 
 while (true) {
-  const input = await io.ask("user> ");
+  const input = await terminal.ask("user> ");
   if (input === "") continue;
   if (input === "/clear") {
     agent.clear();

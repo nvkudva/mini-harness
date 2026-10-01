@@ -41,9 +41,9 @@ Everything else is plumbing around that loop.
 | `src/agent.js` | The loop above. The heart of the harness. |
 | `src/llm.js` | One `fetch` call to the model. The only network code. |
 | `src/tools.js` | Four tools. Each has a schema the model sees and a function that runs. |
-| `src/io.js` | One shared readline for both the prompt and the y/N confirmation. |
+| `src/terminal.js` | One shared readline for both the prompt and the y/N confirmation. |
 
-Read them in this order: `index.js`, `agent.js`, `llm.js`, `tools.js`, `io.js`.
+Read them in this order: `index.js`, `agent.js`, `llm.js`, `tools.js`, `terminal.js`.
 
 ## Step by step
 
