@@ -1,13 +1,14 @@
 // The only place that talks to the model. OpenAI-compatible chat completions API.
 export const ENDPOINT = process.env.LLM_URL ?? "http://localhost:1234/v1/chat/completions";
 export const MODEL = process.env.MODEL ?? "qwen3.8-27b-splash";
+const API_KEY = process.env.API_KEY; // only needed for hosted APIs like OpenAI or DeepSeek
 
 export async function chat(messages, tools) {
   let res;
   try {
     res = await fetch(ENDPOINT, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...(API_KEY && { Authorization: `Bearer ${API_KEY}` }) },
       body: JSON.stringify({ model: MODEL, messages, tools, temperature: 0 }),
     });
   } catch (err) {

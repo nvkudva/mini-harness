@@ -12,6 +12,12 @@ LLM_URL=http://localhost:1234/v1/chat/completions MODEL=qwen3.8-27b-splash npm s
 `LLM_URL` is the chat completions endpoint of any OpenAI-compatible server. `MODEL` is the model name that server expects.
 Both are optional. To hard-code them, edit `ENDPOINT` and `MODEL` at the top of `src/llm.js`.
 
+For a hosted API, also set `API_KEY`. It is sent as `Authorization: Bearer <key>`. Keep it in the environment, not in the file:
+
+```bash
+API_KEY=sk-... LLM_URL=https://api.openai.com/v1/chat/completions MODEL=gpt-4o-mini npm start
+```
+
 On start it prints the model and endpoint in use. Type a task. Type `/clear` to clear the history. Press Ctrl-C to quit.
 If the model call fails (server down, wrong model name), it prints the error and exits.
 Set `DEBUG=1` to print the full `context` array before every model call.
