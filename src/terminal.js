@@ -1,4 +1,4 @@
-// One shared readline so the REPL and the y/n confirmation never fight over stdin.
+// One shared readline so the REPL and the y/n/all confirmation never fight over stdin.
 import { createInterface } from "node:readline/promises";
 
 const readline = createInterface({ input: process.stdin, output: process.stdout });
@@ -17,7 +17,11 @@ export async function ask(question) {
   return value.trim();
 }
 
+let approveAll = false; // set by answering "all": no more questions this session
+
 export async function confirm(question) {
-  const answer = await ask(`${question} [y/n] `);
-  return answer.toLowerCase() === "y";
+  if (approveAll) return true;
+  const answer = (await ask(`${question} [y/n/all] `)).toLowerCase();
+  if (answer === "all") approveAll = true;
+  return answer === "y" || approveAll;
 }

@@ -1,7 +1,7 @@
 # Mini Harness
 
-A tiny coding agent, like Claude Code or Codex, in about 120 lines of Node.js.
-No dependencies. It talks to your local LLM at `http://localhost:1234/v1`.
+A tiny coding agent, like Claude Code or Codex, in about 160 lines of Node.js.
+No dependencies. By default it talks to your local LLM at `http://localhost:1234/v1`.
 
 ## Run it
 
@@ -12,7 +12,8 @@ LLM_URL=http://localhost:1234/v1/chat/completions MODEL=qwen3.5-4b-mlx npm start
 `LLM_URL` is the chat completions endpoint of any OpenAI-compatible server. `MODEL` is the model name that server expects.
 Both are optional. To hard-code them, edit `ENDPOINT` and `MODEL` at the top of `src/llm.js`.
 
-Type a task. Type `/clear` to clear the history. Press Ctrl-C to quit.
+On start it prints the model and endpoint in use. Type a task. Type `/clear` to clear the history. Press Ctrl-C to quit.
+If the model call fails (server down, wrong model name), it prints the error and exits.
 Set `DEBUG=1` to print the full `context` array before every model call.
 
 Example session:
@@ -23,7 +24,7 @@ agnt> Hello! How can I help you today?
 
 user> what time is it
  Tool:run_command({"command":"date"})
- Allow this tool? [y/n] y
+ Allow this tool? [y/n/all] y
 agnt> The current time is Thursday, October 1st at 5:02 PM IST (2026).
 ```
 
@@ -63,15 +64,17 @@ It can only ask.
 
 **Step 3. `llm.js` makes the HTTP request.** It posts `{ model, messages, tools }` to `/v1/chat/completions`.
 It returns just the `message` object from the reply. That object has `content` and maybe `tool_calls`.
+If the server is unreachable or rejects the request, it throws a short error. `index.js` prints it and exits.
 
 **Step 4. The agent checks the reply.** If there are no `tool_calls`, the model is done. The text is returned and printed.
 If there are `tool_calls`, the agent keeps going.
 
 **Step 5. Each tool call is run.** A tool call looks like `{ id, function: { name: "write_file", arguments: "{...}" } }`.
-The arguments are a JSON string, so the agent parses them and calls `tools.run(name, args)`.
+The arguments are a JSON string. The agent passes it as is to `tools.run(name, arguments)`, which parses it.
+Broken JSON comes back to the model as an error string instead of crashing.
 
 **Step 6. Dangerous tools ask first.** `write_file` and `run_command` have `confirm: true`.
-`tools.run` prints the call and asks `Allow this tool? [y/n]`. If you say no, the tool returns `"user denied this action"`.
+`tools.run` prints the call and asks `Allow this tool? [y/n/all]`. Answer `all` to stop being asked for the rest of the session. If you say no, the tool returns `"user denied this action"`.
 The model sees that string and can change plan.
 
 **Step 7. The result goes back into the conversation.** The agent pushes `{ role: "tool", tool_call_id, content }`.

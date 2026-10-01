@@ -10,8 +10,8 @@ export async function chat(messages, tools) {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ model: MODEL, messages, tools, temperature: 0 }),
     });
-  } catch {
-    throw new Error(`cannot reach the model server at ${ENDPOINT}. Is it running? Check LLM_URL, MODEL values`);
+  } catch (err) {
+    throw new Error(`cannot reach the model server at ${ENDPOINT} (${err.cause?.message ?? err.message}). Is it running? Check LLM_URL, MODEL values`);
   }
   if (!res.ok) {
     const body = await res.json().catch(() => null); // OpenAI-style: { error: { message } }

@@ -3,6 +3,7 @@ import * as llm from "./llm.js";
 import * as tools from "./tools.js";
 
 const SYSTEM_PROMPT = `You are a coding assistant working inside the directory ${process.cwd()}.
+You are running on ${process.platform} with the shell ${process.env.SHELL}. Pick shell commands that work there.
 You have tools to list files, read files, write files and run shell commands.
 Use tools to look before you act: read a file before changing it.
 Prefer small, targeted changes. When the task is done, reply with a short plain-text summary.`;
@@ -19,6 +20,7 @@ export async function run(input) {
   context.push({ role: "user", content: input });
   while (true) {
     if (process.env.DEBUG) console.log(JSON.stringify(context, null, 2)); // see exactly what the model sees
+    console.log("working...");
     const reply = await llm.chat(context, tools.schemas);
     context.push(reply);
 

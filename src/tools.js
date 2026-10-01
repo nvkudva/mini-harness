@@ -31,7 +31,7 @@ export const tools = {
     description: "Run a shell command and return its output.",
     parameters: { type: "object", properties: { command: { type: "string" } }, required: ["command"] },
     confirm: true,
-    run: ({ command }) => execSync(command, { encoding: "utf8", stdio: "pipe" }) || "(no output)",
+    run: ({ command }) => execSync(command, { encoding: "utf8", stdio: "pipe", timeout: 30_000 }) || "(no output)",
   },
 };
 
@@ -41,12 +41,14 @@ export const schemas = Object.entries(tools).map(([name, { description, paramete
   function: { name, description, parameters },
 }));
 
+const trim = (text, max = 100) => (text.length > max ? `${text.slice(0, max)}...<trimmed>` : text);
+
 export async function run(name, rawArgs) {
   const tool = tools[name];
   if (!tool) return `error: unknown tool ${name}`;
   try {
     const args = JSON.parse(rawArgs || "{}"); // small models sometimes emit broken JSON
-    console.debug(` Tool:${name}(${JSON.stringify(args)})`);
+    console.log(trim(` Tool:${name}(${JSON.stringify(args)})`)); // display only, the model gets the full call
     const allowed = !tool.confirm || (await terminal.confirm(" Allow this tool?"));
     if (!allowed) return "user denied this action";
     return String(await tool.run(args));
