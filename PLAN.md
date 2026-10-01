@@ -5,7 +5,7 @@ A minimal coding harness (like Claude Code / Codex) in plain Node.js, small enou
 
 ## Architecture
 - `src/index.js`  REPL. Reads a line from the user, calls the agent, prints the reply, repeats.
-- `src/agent.js`  The agent loop. Sends history to the model. If the model asks for tools, runs them, appends results, asks again. Stops when the model answers in plain text.
+- `src/agent.js`  The agent loop. Owns the system prompt and the message history. Sends history to the model. If the model asks for tools, runs them, appends results, asks again. Stops when the model answers in plain text.
 - `src/llm.js`    The only network code. One `fetch` to `POST /v1/chat/completions` (OpenAI-compatible, LM Studio on localhost:1234).
 - `src/tools.js`  Four tools: `read_file`, `write_file`, `list_files`, `run_command`. Each is a JSON schema (what the model sees) plus a function (what runs).
 - `src/io.js`     One shared readline interface and an `ask()` helper used by the REPL and by the y/n confirmation.
@@ -25,7 +25,7 @@ A minimal coding harness (like Claude Code / Codex) in plain Node.js, small enou
 - `edit_file` with search/replace: `write_file` of the whole file is simpler to understand.
 
 ## Revisions
-- System prompt inlined in `src/index.js`; `src/prompt.js` removed.
-- `DEBUG=1` prints the full `messages` array before each model call.
-- `/reset` in the REPL clears history back to the system prompt.
+- System prompt and `context` live in `src/agent.js`; `src/index.js` only calls `agent.run(input)` and `agent.clear()`.
+- `DEBUG=1` prints the full `context` array before each model call.
+- `/clear` in the REPL clears history back to the system prompt.
 - Bad JSON in tool-call arguments is returned to the model as an error instead of crashing.

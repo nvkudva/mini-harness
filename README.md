@@ -9,9 +9,9 @@ No dependencies. It talks to your local LLM at `http://localhost:1234/v1`.
 MODEL=qwen3.5-4b-mlx npm start
 ```
 
-Type a task. Type `exit` or an empty line to quit. Type `/reset` to clear the history.
+Type a task. Type `/clear` to clear the history. Press Ctrl-C to quit.
 `MODEL` picks the model; `LLM_URL` changes the endpoint. Both are optional.
-Set `DEBUG=1` to print the full `messages` array before every model call.
+Set `DEBUG=1` to print the full `context` array before every model call.
 
 Example session:
 
@@ -49,11 +49,11 @@ Read them in this order: `index.js`, `agent.js`, `llm.js`, `tools.js`, `io.js`.
 
 Here is what happens when you type `create hello.txt with the word hello`.
 
-**Step 1. The REPL takes your line.** `index.js` appends it to `messages` as a `user` message.
-`messages` is a plain array. It starts with one `system` message and grows for the whole session.
+**Step 1. The REPL takes your line.** `index.js` passes it to `agent.run`, which appends it to `context` as a `user` message.
+`context` is a plain array kept in `agent.js`. It starts with one `system` message and grows for the whole session.
 That array is the agent's entire memory.
 
-**Step 2. The agent sends everything to the model.** `agent.js` calls `llm.chat(messages, tools.schemas)`.
+**Step 2. The agent sends everything to the model.** `agent.js` calls `llm.chat(context, tools.schemas)`.
 `tools.schemas` is the list of tools the model may use, as JSON. The model never runs anything itself.
 It can only ask.
 
