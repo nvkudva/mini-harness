@@ -4,7 +4,9 @@ import readline from "node:readline/promises";
 export const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
 export async function ask(question) {
-  return (await rl.question(question)).trim();
+  // EOF (piped input or Ctrl-D): readline closes; a pending or new question would throw.
+  if (rl.closed) return "";
+  return (await rl.question(question).catch(() => "")).trim();
 }
 
 export async function confirm(question) {
