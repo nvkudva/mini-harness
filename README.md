@@ -16,7 +16,7 @@ Set `DEBUG=1` to print the full `messages` array before every model call.
 Example session:
 
 ```
-you> create hello.txt with the word hello
+user> create hello.txt with the word hello
   > write_file({"path":"hello.txt","content":"hello"})
   Allow? [y/N] y
 
@@ -76,7 +76,7 @@ Errors are pushed the same way as strings. The model can read the error and try 
 **Step 8. Loop.** Back to step 2. The model now sees the tool result and decides what to do next.
 It might call another tool, like `list_files`, or answer in text. When it answers in text, the loop exits.
 
-**Step 9. Print and wait.** `index.js` prints `agent> ...` and shows `you>` again.
+**Step 9. Print and wait.** `index.js` prints `agent> ...` and shows `user>` again.
 Your next message is added to the same array, so the model remembers everything so far.
 
 ## Adding a tool

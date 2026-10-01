@@ -10,11 +10,11 @@ Prefer small, targeted changes. When the task is done, reply with a short plain-
 const messages = [{ role: "system", content: SYSTEM_PROMPT }];
 
 while (true) {
-  const input = await io.ask("\nyou> ");
+  const input = await io.ask("user> ");
   if (input === "exit" || input === "") break;
   if (input === "/reset") { messages.length = 1; console.log("history cleared"); continue; } // keep only the system prompt
   messages.push({ role: "user", content: input });
   const answer = await agent.run(messages);
-  console.log(`\nagent> ${answer}`);
+  console.log(`agent> ${answer}\n`);
 }
 io.rl.close();

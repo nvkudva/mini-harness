@@ -8,7 +8,8 @@ export async function run(messages) {
     const reply = await llm.chat(messages, tools.schemas);
     messages.push(reply);
 
-    if (!reply.tool_calls?.length) return (reply.content ?? "").trim(); // plain answer: we are done
+    if (!reply.tool_calls?.length) 
+    return (reply.content ?? "").trim(); // plain answer: we are done
 
     for (const { id, function: fn } of reply.tool_calls) {
       let result;
