@@ -3,10 +3,14 @@ import readline from "node:readline/promises";
 
 export const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
 
+// Async iterator buffers every line from the moment it is created, so piped input is never dropped
+// while no question is pending. It ends on EOF (piped input or Ctrl-D).
+const lines = rl[Symbol.asyncIterator]();
+
 export async function ask(question) {
-  // EOF (piped input or Ctrl-D): readline closes; a pending or new question would throw.
-  if (rl.closed) return "";
-  return (await rl.question(question).catch(() => "")).trim();
+  process.stdout.write(question);
+  const { value, done } = await lines.next();
+  return done ? "" : value.trim();
 }
 
 export async function confirm(question) {
